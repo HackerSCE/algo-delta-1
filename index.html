@@ -18,9 +18,19 @@
 
 <script>
 async function fetchPrice() {
-    const res = await fetch("https://api.delta.exchange/v2/tickers/BTCUSDTPERP");
-    const data = await res.json();
-    document.getElementById("price").innerText = data.result.last_price;
+    try {
+        const proxy = "https://api.allorigins.win/raw?url=";
+        const url = proxy + encodeURIComponent("https://api.delta.exchange/v2/tickers/BTCUSDTPERP");
+
+        const res = await fetch(url);
+        const data = await res.json();
+
+        document.getElementById("price").innerText = data.result.last_price;
+
+    } catch (err) {
+        document.getElementById("price").innerText = "Error loading price";
+        console.error("Fetch error:", err);
+    }
 }
 
 setInterval(fetchPrice, 5000);
