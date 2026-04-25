@@ -5,23 +5,40 @@ from datetime import datetime
 BASE_URL = "https://api.delta.exchange"
 SYMBOL = "BTCUSD"
 
+import time
+
 def get_ltp():
     try:
-        url = "https://api.delta.exchange/v2/tickers/BTCUSD"
-        print("Fetching URL:", url)
+        url = "https://api.delta.exchange/v2/history/candles"
 
-        res = requests.get(url, timeout=10)
+        now = int(time.time())
+        start = now - 120  # last 2 minutes
+
+        params = {
+            "symbol": "BTCUSD",
+            "resolution": "1m",
+            "start": start,
+            "end": now
+        }
+
+        print("Fetching candles:", url)
+        print("Params:", params)
+
+        res = requests.get(url, params=params, timeout=10)
         print("Status Code:", res.status_code)
-        print("Response:", res.text)
 
         data = res.json()
 
-        if data.get("result"):
-            price = float(data["result"]["last_price"])
+        if data.get("result") and len(data["result"]) > 0:
+            last_candle = data["result"][-1]
+
+            # ✅ correct format (DICT, not list)
+            price = float(last_candle["close"])
+
             print("✅ Price:", price)
             return price
         else:
-            print("❌ No result in response")
+            print("❌ No candle data")
             return None
 
     except Exception as e:
