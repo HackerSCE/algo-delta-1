@@ -3,7 +3,7 @@ import json
 from datetime import datetime
 
 BASE_URL = "https://api.delta.exchange"
-SYMBOL = "BTCUSDTPERP"
+SYMBOL = "BTCUSD"
 
 def get_ltp():
     try:
@@ -17,8 +17,9 @@ def get_ltp():
 
         # find BTCUSDT perpetual
         for item in data["result"]:
-            if item["symbol"] == "BTCUSDTPERP":
+            if item["symbol"] == "BTCUSD":
                 price = float(item["last_price"])
+                print("Matched symbol:", item["symbol"])
                 return price
 
         print("❌ BTC symbol not found")
