@@ -15,10 +15,8 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
-        with:
-          persist-credentials: true
 
-      - name: Show Files (DEBUG)
+      - name: Debug Files
         run: ls -la
 
       - name: Setup Python
@@ -32,7 +30,7 @@ jobs:
       - name: Run Bot
         run: python trading_bot.py
 
-      - name: Show data.json (DEBUG)
+      - name: Show data.json
         run: cat data.json
 
       - name: Commit and Push
@@ -43,8 +41,8 @@ jobs:
           git add data.json
 
           if git diff --cached --quiet; then
-            echo "❌ No changes detected"
+            echo "No changes"
           else
             git commit -m "Update BTC price"
-            git push origin main
+            git push
           fi
