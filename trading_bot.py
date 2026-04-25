@@ -15,20 +15,27 @@ def get_ltp():
 
         data = res.json()
 
-        # find BTCUSDT perpetual
+        # DEBUG: print ALL BTC-related symbols
+        print("\n--- BTC RELATED SYMBOLS ---")
         for item in data["result"]:
-            if item["symbol"] == "BTCUSD":
+            if "BTC" in item["symbol"]:
+                print(item["symbol"], "->", item.get("last_price"))
+
+        print("---------------------------\n")
+
+        # pick first BTC market with valid price
+        for item in data["result"]:
+            if "BTC" in item["symbol"] and item.get("last_price"):
                 price = float(item["last_price"])
                 print("Matched symbol:", item["symbol"])
                 return price
 
-        print("❌ BTC symbol not found")
+        print("❌ No BTC market found")
         return None
 
     except Exception as e:
         print("❌ ERROR:", e)
         return None
-
 
 def save_data(price):
     data = {
