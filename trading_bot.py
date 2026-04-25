@@ -7,36 +7,27 @@ SYMBOL = "BTCUSD"
 
 def get_ltp():
     try:
-        url = "https://api.delta.exchange/v2/tickers"
+        url = "https://api.delta.exchange/v2/tickers/BTCUSD"
         print("Fetching URL:", url)
 
         res = requests.get(url, timeout=10)
         print("Status Code:", res.status_code)
+        print("Response:", res.text)
 
         data = res.json()
 
-        # DEBUG: print ALL BTC-related symbols
-        print("\n--- BTC RELATED SYMBOLS ---")
-        for item in data["result"]:
-            if "BTC" in item["symbol"]:
-                print(item["symbol"], "->", item.get("last_price"))
-
-        print("---------------------------\n")
-
-        # pick first BTC market with valid price
-        for item in data["result"]:
-            if "BTC" in item["symbol"] and item.get("last_price"):
-                price = float(item["last_price"])
-                print("Matched symbol:", item["symbol"])
-                return price
-
-        print("❌ No BTC market found")
-        return None
+        if data.get("result"):
+            price = float(data["result"]["last_price"])
+            print("✅ Price:", price)
+            return price
+        else:
+            print("❌ No result in response")
+            return None
 
     except Exception as e:
         print("❌ ERROR:", e)
         return None
-
+        
 def save_data(price):
     data = {
         "price": price,
