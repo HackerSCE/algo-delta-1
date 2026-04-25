@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Trading Dashboard</title>
+  <style>
+    body { font-family: Arial; text-align: center; background: #111; color: #0f0; }
+    .card { margin: 20px; padding: 20px; border: 1px solid #0f0; }
+  </style>
+</head>
+<body>
+
+<h1>BTC Trading Bot</h1>
+
+<div class="card">
+  <h2>Live Price</h2>
+  <p id="price">Loading...</p>
+</div>
+
+<script>
+async function fetchPrice() {
+    const res = await fetch("https://api.delta.exchange/v2/tickers/BTCUSDTPERP");
+    const data = await res.json();
+    document.getElementById("price").innerText = data.result.last_price;
+}
+
+setInterval(fetchPrice, 5000);
+fetchPrice();
+</script>
+
+</body>
+</html>
