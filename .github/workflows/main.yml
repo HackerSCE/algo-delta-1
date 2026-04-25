@@ -1,8 +1,6 @@
-name: Run Trading Bot Every 30 Min
+name: BTC Bot v2
 
 on:
-  schedule:
-    - cron: "*/30 * * * *"
   workflow_dispatch:
 
 jobs:
@@ -13,27 +11,27 @@ jobs:
       contents: write
 
     steps:
-      - name: Checkout Repo
+      - name: Step 1 - Checkout
         uses: actions/checkout@v3
 
-      - name: Debug Files
+      - name: Step 2 - Show Files
         run: ls -la
 
-      - name: Setup Python
+      - name: Step 3 - Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
 
-      - name: Install Dependencies
+      - name: Step 4 - Install
         run: pip install -r requirements.txt
 
-      - name: Run Bot
+      - name: Step 5 - Run Bot
         run: python trading_bot.py
 
-      - name: Show data.json
+      - name: Step 6 - Show data
         run: cat data.json
 
-      - name: Commit and Push
+      - name: Step 7 - Commit
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
