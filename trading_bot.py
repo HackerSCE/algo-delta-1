@@ -3,52 +3,66 @@ import json
 import time
 from datetime import datetime
 
-
 BASE_URL = "https://api.delta.exchange"
 SYMBOL = "BTCUSD"
 
 
+def get_exchange_time():
+    try:
+        url = f"{BASE_URL}/v2/time"
+        res = requests.get(url, timeout=10)
+        data = res.json()
+
+        # API returns epoch seconds
+        return int(data["result"]["server_time"])
+    except Exception as e:
+        print("❌ Error getting server time:", e)
+        return None
+
+
 def get_ltp():
     try:
+        server_time = get_exchange_time()
+
+        if not server_time:
+            print("❌ Could not get server time")
+            return None
+
         url = f"{BASE_URL}/v2/history/candles"
 
-        now = int(time.time())
-        start = now - 600  # last 10 minutes (safe)
+        # SAFE window (15 minutes back)
+        start = server_time - 900
+        end = server_time
 
         params = {
             "symbol": SYMBOL,
             "resolution": "1m",
             "start": start,
-            "end": now
+            "end": end
         }
 
         print("Fetching candles...")
         print("Params:", params)
 
-        response = requests.get(url, params=params, timeout=10)
-        print("Status Code:", response.status_code)
+        res = requests.get(url, params=params, timeout=10)
+        print("Status Code:", res.status_code)
 
-        data = response.json()
-
-        # Debug (optional)
-        print("Raw Response:", str(data)[:200])
+        data = res.json()
+        print("Response preview:", str(data)[:200])
 
         if data.get("result") and len(data["result"]) > 0:
             last_candle = data["result"][-1]
-
             price = float(last_candle["close"])
 
             print("✅ Price fetched:", price)
             return price
-
         else:
             print("❌ No candle data returned")
             return None
 
     except Exception as e:
-        print("❌ ERROR fetching price:", e)
+        print("❌ ERROR:", e)
         return None
-
 
 def save_data(price):
     try:
