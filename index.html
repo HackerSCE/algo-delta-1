@@ -1,40 +1,70 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Trading Dashboard</title>
+  <title>BTC Trading Bot</title>
   <style>
-    body { font-family: Arial; text-align: center; background: #111; color: #0f0; }
-    .card { margin: 20px; padding: 20px; border: 1px solid #0f0; }
+    body {
+      background-color: #000;
+      color: #00ff00;
+      font-family: Arial;
+      text-align: center;
+    }
+
+    h1 {
+      margin-top: 40px;
+    }
+
+    .card {
+      border: 1px solid #00ff00;
+      margin: 30px auto;
+      padding: 20px;
+      width: 80%;
+    }
+
+    .value {
+      font-size: 24px;
+      margin-top: 10px;
+    }
   </style>
 </head>
+
 <body>
 
 <h1>BTC Trading Bot</h1>
 
 <div class="card">
   <h2>Live Price</h2>
-  <p id="price">Loading...</p>
+  <div id="price" class="value">Loading...</div>
+</div>
+
+<div class="card">
+  <h2>Last Updated</h2>
+  <div id="time" class="value">--</div>
+</div>
+
+<div class="card">
+  <h2>Status</h2>
+  <div id="status" class="value">--</div>
 </div>
 
 <script>
-async function fetchPrice() {
+async function fetchData() {
     try {
-        const proxy = "https://api.allorigins.win/raw?url=";
-        const url = proxy + encodeURIComponent("https://api.delta.exchange/v2/tickers/BTCUSDTPERP");
-
-        const res = await fetch(url);
+        const res = await fetch("data.json?t=" + new Date().getTime());
         const data = await res.json();
 
-        document.getElementById("price").innerText = data.result.last_price;
+        document.getElementById("price").innerText = data.price;
+        document.getElementById("time").innerText = data.last_updated;
+        document.getElementById("status").innerText = data.status;
 
     } catch (err) {
-        document.getElementById("price").innerText = "Error loading price";
-        console.error("Fetch error:", err);
+        document.getElementById("price").innerText = "Error";
+        console.error(err);
     }
 }
 
-setInterval(fetchPrice, 5000);
-fetchPrice();
+setInterval(fetchData, 5000);
+fetchData();
 </script>
 
 </body>
