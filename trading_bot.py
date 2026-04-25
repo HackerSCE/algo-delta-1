@@ -7,18 +7,22 @@ SYMBOL = "BTCUSDTPERP"
 
 def get_ltp():
     try:
-        url = f"{BASE_URL}/v2/tickers/{SYMBOL}"
+        url = "https://api.delta.exchange/v2/tickers"
         print("Fetching URL:", url)
 
         res = requests.get(url, timeout=10)
         print("Status Code:", res.status_code)
-        print("Raw Response:", res.text)
 
-        res.raise_for_status()
         data = res.json()
 
-        price = float(data['result']['last_price'])
-        return price
+        # find BTCUSDT perpetual
+        for item in data["result"]:
+            if item["symbol"] == "BTCUSDTPERP":
+                price = float(item["last_price"])
+                return price
+
+        print("❌ BTC symbol not found")
+        return None
 
     except Exception as e:
         print("❌ ERROR:", e)
